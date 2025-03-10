@@ -19,7 +19,9 @@ class WifiInfoUtility(private val context: Context) {
     @SuppressLint("DefaultLocale")
     fun getWifiInfo(): WifiInfoData {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        val currentNetwork = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(currentNetwork)
+        val linkProperties = connectivityManager.getLinkProperties(currentNetwork)
 
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val wifiInfo: WifiInfo? = wifiManager.connectionInfo
@@ -41,28 +43,36 @@ class WifiInfoUtility(private val context: Context) {
                     ip shr 24 and 0xff
                 )
             },
-            macAddress = wifiInfo?.macAddress,
+            ipRouter = wifiManager.dhcpInfo.dns1.let { ip ->
+                String.format(
+                    "%d.%d.%d.%d",
+                    ip and 0xff,
+                    ip shr 8 and 0xff,
+                    ip shr 16 and 0xff,
+                    ip shr 24 and 0xff
+                )
+            },
             bssid = wifiInfo?.bssid,
             ssid = wifiInfo?.ssid?.removeSurrounding("\""),
             rssi = wifiInfo?.rssi,
             linkSpeed = wifiInfo?.linkSpeed,
             phyMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 when (wifiInfo?.wifiStandard) {
-                    WIFI_STANDARD_LEGACY -> "802.11a/b/g"
-                    WIFI_STANDARD_11N -> "802.11n（WiFi-4・2.4/5GHz）"
-                    WIFI_STANDARD_11AC -> "802.11ac（WiFi-5・5GHz）"
-                    WIFI_STANDARD_11AX -> "802.11ax（WiFi-6・2.4/5/6GHz）"
-                    WIFI_STANDARD_11AD -> "802.11ad（WiGig・60GHZ）"
-                    WIFI_STANDARD_11BE -> "802.11be（WiFi-7・2.4/5/6GHz）"
+                    WIFI_STANDARD_LEGACY -> "802.11a/b/g（Wi-Fi 1-3 ・ 2.4/5GHz）"
+                    WIFI_STANDARD_11N -> "802.11n（Wi-Fi 4 ・ 2.4/5GHz）"
+                    WIFI_STANDARD_11AC -> "802.11ac（Wi-Fi 5 ・ 5GHz）"
+                    WIFI_STANDARD_11AX -> "802.11ax（Wi-Fi 6 ・ 2.4/5/6GHz）"
+                    WIFI_STANDARD_11AD -> "802.11ad（Wi-Gig ・ 60GHZ）"
+                    WIFI_STANDARD_11BE -> "802.11be（Wi-Fi 7 ・ 2.4/5/6GHz）"
                     else -> "不明"
                 }
             } else {
                 "不明"
             },
             channel = wifiInfo?.frequency?.let { freq ->
-                when {
-                    freq in 2412..2484 -> (freq - 2412) / 5 + 1
-                    freq in 5170..5825 -> (freq - 5170) / 5 + 36
+                when (freq) {
+                    in 2412..2484 -> (freq - 2412) / 5 + 1
+                    in 5170..5825 -> (freq - 5170) / 5 + 36
                     else -> null
                 }
             },
@@ -84,11 +94,35 @@ class WifiInfoUtility(private val context: Context) {
                 "不明"
             },
             frequency = wifiInfo?.frequency,
+            dhcp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                linkProperties?.dhcpServerAddress?.hostAddress.toString()
+            } else {
+                wifiManager.dhcpInfo.ipAddress.toString()
+            },
+            dns = linkProperties?.dnsServers?.last().toString().replace(oldValue = "/", newValue = "", ignoreCase = false),
+            gateway = wifiManager.dhcpInfo.gateway.let { ip ->
+                String.format(
+                    "%d.%d.%d.%d",
+                    ip and 0xff,
+                    ip shr 8 and 0xff,
+                    ip shr 16 and 0xff,
+                    ip shr 24 and 0xff
+                )
+            },
+            subNet = wifiManager.dhcpInfo.netmask.let { ip ->
+                String.format(
+                    "%d.%d.%d.%d",
+                    ip and 0xff,
+                    ip shr 8 and 0xff,
+                    ip shr 16 and 0xff,
+                    ip shr 24 and 0xff
+                )
+            },
             networkType = networkType
         )
     }
 
-    fun convertSecurityType(currentSecurityType: Int?): String? {
+    fun convertSecurityType(currentSecurityType: Int?): String {
         return when(currentSecurityType) {
             1 -> "WEP"
             2 -> "WPA/WPA2-PSK"
@@ -104,6 +138,17 @@ class WifiInfoUtility(private val context: Context) {
             12 -> "Passpoint Release 3"
             13 -> "Wi-Fi Easy Connect(DPP)"
             else -> "不明"
+        }
+    }
+
+    fun convertSubNet(value: Short): String {
+        return when(value.toInt()) {
+            8 -> "255.0.0.0"
+            16 -> "255.255.0.0"
+            24 -> "255.255.255.0"
+            128 -> "::1/128"
+            10 -> "fe80::203:baff:fe27:1243/10"
+            else -> ""
         }
     }
 }
