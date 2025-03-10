@@ -3,6 +3,7 @@ package levilin.wifi.info.utility
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.DhcpInfo
 import android.net.NetworkCapabilities
 import android.net.wifi.ScanResult.WIFI_STANDARD_11AC
 import android.net.wifi.ScanResult.WIFI_STANDARD_11AD
@@ -14,6 +15,7 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import levilin.wifi.info.ui.model.WifiInfoData
+import java.net.InetAddress
 
 class WifiInfoUtility(private val context: Context) {
     @SuppressLint("DefaultLocale")
@@ -109,15 +111,7 @@ class WifiInfoUtility(private val context: Context) {
                     ip shr 24 and 0xff
                 )
             },
-            subNet = wifiManager.dhcpInfo.netmask.let { ip ->
-                String.format(
-                    "%d.%d.%d.%d",
-                    ip and 0xff,
-                    ip shr 8 and 0xff,
-                    ip shr 16 and 0xff,
-                    ip shr 24 and 0xff
-                )
-            },
+            subNet = getSubNet(wifiManager = wifiManager),
             networkType = networkType
         )
     }
@@ -141,14 +135,13 @@ class WifiInfoUtility(private val context: Context) {
         }
     }
 
-    fun convertSubNet(value: Short): String {
-        return when(value.toInt()) {
-            8 -> "255.0.0.0"
-            16 -> "255.255.0.0"
-            24 -> "255.255.255.0"
-            128 -> "::1/128"
-            10 -> "fe80::203:baff:fe27:1243/10"
-            else -> ""
+    fun getSubNet(wifiManager: WifiManager): String {
+        val dhcp: DhcpInfo = wifiManager.dhcpInfo
+        val broadcast = (dhcp.ipAddress and dhcp.netmask) or dhcp.netmask.inv()
+        val quads = ByteArray(4)
+        for (k in 0..3) {
+            quads[k] = (broadcast shr (k * 8) and 0xFF).toByte()
         }
+        return InetAddress.getByAddress(quads).toString().replace(oldValue = "/", newValue = "", ignoreCase = false)
     }
 }
