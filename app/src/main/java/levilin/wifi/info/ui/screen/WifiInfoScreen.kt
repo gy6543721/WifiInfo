@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -23,22 +24,36 @@ fun WifiInfoScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        wifiInfo?.let { info ->
-            if (info.networkType == "Wi-Fi") {
-                Text(text = "SSID: ${info.ssid ?: "未知"}")
-                Text(text = "BSSID: ${info.bssid ?: "未知"}")
-                Text(text = "IPアドレス: ${info.ipAddress ?: "未知"}")
-                Text(text = "MACアドレス: ${info.macAddress ?: "未知"}")
-                Text(text = "RSSI: ${info.rssi ?: "未知"}")
-                Text(text = "転送レート: ${info.linkSpeed ?: "未知"}(Mbps)")
-                Text(text = "PHYモード: ${info.phyMode ?: "未知"}")
-                Text(text = "チャンネル: ${info.channel ?: "未知"}")
-                Text(text = "NSS: ${info.nss ?: "未知"}")
-                Text(text = "セキュリティタイプ: ${info.securityType ?: "未知"}")
-            } else {
-                Text(text = "ネットワークタイプ: ${info.networkType}")
-            }
-        } ?: Text(text = "ネットワーク情報なし")
+        Column(
+            horizontalAlignment = Alignment.Start
+        ) {
+            wifiInfo?.let { info ->
+                if (info.networkType == "WiFi回線") {
+                    Text(
+                        text = "Wi-Fiに接続している",
+                        color = Color.Red,
+                    )
+
+                    Text(text = "SSID: ${info.ssid ?: "未知"}")
+                    Text(text = "BSSID: ${info.bssid ?: "未知"}")
+                    Text(text = "IPアドレス: ${info.ipAddress ?: "未知"}")
+                    Text(text = "MACアドレス: ${info.macAddress ?: "未知"}")
+                    Text(text = "電波強度（RSSI）: ${info.rssi ?: "未知"}")
+                    Text(text = "帯域: ${info.frequency ?: "未知"}(MHz)")
+                    Text(text = "転送レート: ${info.linkSpeed ?: "未知"}(Mbps)")
+                    Text(text = "PHYモード: ${info.phyMode ?: "未知"}")
+                    Text(text = "チャンネル: ${info.channel ?: "未知"}")
+                    Text(text = "NSS: ${info.nss ?: "未知"}")
+                    Text(text = "セキュリティタイプ: ${info.securityType ?: "未知"}")
+                } else {
+                    Text(
+                        text = "Wi-Fiに接続していない",
+                        color = Color.Red,
+                    )
+                    Text(text = "ネットワークタイプ: ${info.networkType}")
+                }
+            } ?: Text(text = "ネットワーク情報なし")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
