@@ -15,6 +15,5 @@ data class WifiInfoData(
     val dhcp: String?,
     val dns: String?,
     val gateway: String?,
-    val subNet: String?,
     val networkType: String?
 )
