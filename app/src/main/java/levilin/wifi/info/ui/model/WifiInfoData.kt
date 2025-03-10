@@ -11,5 +11,6 @@ data class WifiInfoData(
     val channel: Int?,
     val nss: Int?,
     val securityType: String?,
+    val frequency: Int?,
     val networkType: String?
 )
