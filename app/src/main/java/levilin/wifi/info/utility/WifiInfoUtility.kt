@@ -16,7 +16,6 @@ import android.os.Build
 import levilin.wifi.info.ui.model.WifiInfoData
 
 class WifiInfoUtility(private val context: Context) {
-    @SuppressLint("DefaultLocale")
     fun getWifiInfo(): WifiInfoData {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val currentNetwork = connectivityManager.activeNetwork
@@ -34,38 +33,14 @@ class WifiInfoUtility(private val context: Context) {
         }
 
         return WifiInfoData(
-            ipAddress = wifiInfo?.ipAddress?.let { ip ->
-                String.format(
-                    "%d.%d.%d.%d",
-                    ip and 0xff,
-                    ip shr 8 and 0xff,
-                    ip shr 16 and 0xff,
-                    ip shr 24 and 0xff
-                )
-            },
-            ipRouter = wifiManager.dhcpInfo.gateway.let { ip ->
-                String.format(
-                    "%d.%d.%d.%d",
-                    ip and 0xff,
-                    ip shr 8 and 0xff,
-                    ip shr 16 and 0xff,
-                    ip shr 24 and 0xff
-                )
-            },
+            ipAddress = ipFormat(wifiInfo?.ipAddress),
+            ipRouter = ipFormat(wifiManager.dhcpInfo.gateway),
             bssid = wifiInfo?.bssid,
             ssid = wifiInfo?.ssid?.removeSurrounding("\""),
             rssi = wifiInfo?.rssi,
             linkSpeed = wifiInfo?.linkSpeed,
             phyMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                when (wifiInfo?.wifiStandard) {
-                    WIFI_STANDARD_LEGACY -> "802.11a/b/g（Wi-Fi 1-3・2.4/5GHz）"
-                    WIFI_STANDARD_11N -> "802.11n（Wi-Fi 4・2.4/5GHz）"
-                    WIFI_STANDARD_11AC -> "802.11ac（Wi-Fi 5・5GHz）"
-                    WIFI_STANDARD_11AX -> "802.11ax（Wi-Fi 6・2.4/5/6GHz）"
-                    WIFI_STANDARD_11AD -> "802.11ad（Wi-Gig・60GHZ）"
-                    WIFI_STANDARD_11BE -> "802.11be（Wi-Fi 7・2.4/5/6GHz）"
-                    else -> "不明"
-                }
+                convertPHYMode(wifiInfo?.wifiStandard)
             } else {
                 "不明"
             },
@@ -120,6 +95,31 @@ class WifiInfoUtility(private val context: Context) {
             12 -> "Passpoint Release 3"
             13 -> "Wi-Fi Easy Connect(DPP)"
             else -> "不明"
+        }
+    }
+
+    fun convertPHYMode(wifiStandard: Int?): String {
+        return when (wifiStandard) {
+            WIFI_STANDARD_LEGACY -> "802.11a/b/g（Wi-Fi 1-3・2.4/5GHz）"
+            WIFI_STANDARD_11N -> "802.11n（Wi-Fi 4・2.4/5GHz）"
+            WIFI_STANDARD_11AC -> "802.11ac（Wi-Fi 5・5GHz）"
+            WIFI_STANDARD_11AX -> "802.11ax（Wi-Fi 6・2.4/5/6GHz）"
+            WIFI_STANDARD_11AD -> "802.11ad（Wi-Gig・60GHZ）"
+            WIFI_STANDARD_11BE -> "802.11be（Wi-Fi 7・2.4/5/6GHz）"
+            else -> "不明"
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun ipFormat(ip: Int?): String? {
+        return ip?.let { ip ->
+            String.format(
+                "%d.%d.%d.%d",
+                ip.and(0xff),
+                ip shr 8 and 0xff,
+                ip shr 16 and 0xff,
+                ip shr 24 and 0xff
+            )
         }
     }
 
