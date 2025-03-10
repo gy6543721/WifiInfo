@@ -3,7 +3,6 @@ package levilin.wifi.info.utility
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.DhcpInfo
 import android.net.NetworkCapabilities
 import android.net.wifi.ScanResult.WIFI_STANDARD_11AC
 import android.net.wifi.ScanResult.WIFI_STANDARD_11AD
@@ -15,7 +14,6 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import levilin.wifi.info.ui.model.WifiInfoData
-import java.net.InetAddress
 
 class WifiInfoUtility(private val context: Context) {
     @SuppressLint("DefaultLocale")
@@ -45,7 +43,7 @@ class WifiInfoUtility(private val context: Context) {
                     ip shr 24 and 0xff
                 )
             },
-            ipRouter = wifiManager.dhcpInfo.dns1.let { ip ->
+            ipRouter = wifiManager.dhcpInfo.gateway.let { ip ->
                 String.format(
                     "%d.%d.%d.%d",
                     ip and 0xff,
@@ -60,12 +58,12 @@ class WifiInfoUtility(private val context: Context) {
             linkSpeed = wifiInfo?.linkSpeed,
             phyMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 when (wifiInfo?.wifiStandard) {
-                    WIFI_STANDARD_LEGACY -> "802.11a/b/g（Wi-Fi 1-3 ・ 2.4/5GHz）"
-                    WIFI_STANDARD_11N -> "802.11n（Wi-Fi 4 ・ 2.4/5GHz）"
-                    WIFI_STANDARD_11AC -> "802.11ac（Wi-Fi 5 ・ 5GHz）"
-                    WIFI_STANDARD_11AX -> "802.11ax（Wi-Fi 6 ・ 2.4/5/6GHz）"
-                    WIFI_STANDARD_11AD -> "802.11ad（Wi-Gig ・ 60GHZ）"
-                    WIFI_STANDARD_11BE -> "802.11be（Wi-Fi 7 ・ 2.4/5/6GHz）"
+                    WIFI_STANDARD_LEGACY -> "802.11a/b/g（Wi-Fi 1-3・2.4/5GHz）"
+                    WIFI_STANDARD_11N -> "802.11n（Wi-Fi 4・2.4/5GHz）"
+                    WIFI_STANDARD_11AC -> "802.11ac（Wi-Fi 5・5GHz）"
+                    WIFI_STANDARD_11AX -> "802.11ax（Wi-Fi 6・2.4/5/6GHz）"
+                    WIFI_STANDARD_11AD -> "802.11ad（Wi-Gig・60GHZ）"
+                    WIFI_STANDARD_11BE -> "802.11be（Wi-Fi 7・2.4/5/6GHz）"
                     else -> "不明"
                 }
             } else {
@@ -102,15 +100,6 @@ class WifiInfoUtility(private val context: Context) {
                 wifiManager.dhcpInfo.ipAddress.toString()
             },
             dns = linkProperties?.dnsServers?.last().toString().replace(oldValue = "/", newValue = "", ignoreCase = false),
-            gateway = wifiManager.dhcpInfo.gateway.let { ip ->
-                String.format(
-                    "%d.%d.%d.%d",
-                    ip and 0xff,
-                    ip shr 8 and 0xff,
-                    ip shr 16 and 0xff,
-                    ip shr 24 and 0xff
-                )
-            },
             networkType = networkType
         )
     }

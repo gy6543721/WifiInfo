@@ -1,4 +1,4 @@
 # WifiInfo
 Wifi Info Demo App
 
-<img width="270" src="https://github.com/user-attachments/assets/225393b9-c6a6-436c-8b90-2b794907e674">
+<img width="270" src="https://github.com/user-attachments/assets/f3ae2d4e-2e13-4b4f-be89-8615768c4c6d">
