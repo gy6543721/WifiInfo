@@ -111,7 +111,6 @@ class WifiInfoUtility(private val context: Context) {
                     ip shr 24 and 0xff
                 )
             },
-            subNet = getSubNet(wifiManager = wifiManager),
             networkType = networkType
         )
     }
@@ -135,13 +134,14 @@ class WifiInfoUtility(private val context: Context) {
         }
     }
 
-    fun getSubNet(wifiManager: WifiManager): String {
-        val dhcp: DhcpInfo = wifiManager.dhcpInfo
-        val broadcast = (dhcp.ipAddress and dhcp.netmask) or dhcp.netmask.inv()
-        val quads = ByteArray(4)
-        for (k in 0..3) {
-            quads[k] = (broadcast shr (k * 8) and 0xFF).toByte()
-        }
-        return InetAddress.getByAddress(quads).toString().replace(oldValue = "/", newValue = "", ignoreCase = false)
-    }
+    // サブネット用
+//    fun getSubNet(wifiManager: WifiManager): String {
+//        val dhcp: DhcpInfo = wifiManager.dhcpInfo
+//        val broadcast = (dhcp.ipAddress and dhcp.netmask) or dhcp.netmask.inv()
+//        val quads = ByteArray(4)
+//        for (k in 0..3) {
+//            quads[k] = (broadcast shr (k * 8) and 0xFF).toByte()
+//        }
+//        return InetAddress.getByAddress(quads).toString().replace(oldValue = "/", newValue = "", ignoreCase = false)
+//    }
 }
