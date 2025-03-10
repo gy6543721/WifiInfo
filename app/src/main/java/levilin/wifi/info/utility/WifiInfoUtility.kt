@@ -16,6 +16,7 @@ import android.os.Build
 import levilin.wifi.info.ui.model.WifiInfoData
 
 class WifiInfoUtility(private val context: Context) {
+    @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("DefaultLocale")
     fun getWifiInfo(): WifiInfoData {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
