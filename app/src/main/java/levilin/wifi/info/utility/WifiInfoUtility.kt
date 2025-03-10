@@ -1,6 +1,5 @@
 package levilin.wifi.info.utility
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
@@ -14,7 +13,6 @@ import android.net.wifi.ScanResult.WIFI_STANDARD_LEGACY
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
-import androidx.annotation.RequiresApi
 import levilin.wifi.info.ui.model.WifiInfoData
 
 class WifiInfoUtility(private val context: Context) {
@@ -81,7 +79,11 @@ class WifiInfoUtility(private val context: Context) {
             } else {
                 null
             },
-            securityType = convertSecurityType(wifiInfo?.currentSecurityType),
+            securityType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                convertSecurityType(wifiInfo?.currentSecurityType)
+            } else {
+                "不明"
+            },
             frequency = wifiInfo?.frequency,
             networkType = networkType
         )
@@ -90,18 +92,18 @@ class WifiInfoUtility(private val context: Context) {
     fun convertSecurityType(currentSecurityType: Int?): String? {
         return when(currentSecurityType) {
             1 -> "WEP"
-            2 -> "PSK"
-            3 -> "EAP"
-            4 -> "SAE"
-            5 -> "EAP_WPA3 ENTERPRISE 192 BIT"
-            6 -> "OWE"
-            7 -> "WAPI_PSK"
-            8 -> "WAPI_CERT"
-            9 -> "EAP_WPA3 ENTERPRISE"
-            10 -> "OSEN"
-            11 -> "PASSPOINT_R1_R2"
-            12 -> "PASSPOINT_R3"
-            13 -> "DPP"
+            2 -> "WPA/WPA2-PSK"
+            3 -> "WPA/WPA2-EAP"
+            4 -> "WPA3-SAE(WPA3-personal)"
+            5 -> "WPA3 Enterprise 192-bit mode(CNSA)"
+            6 -> "WPA3-OWE"
+            7 -> "WAPI-PSK"
+            8 -> "WAPI-CERT"
+            9 -> "WPA3-EAP Enterprise"
+            10 -> "WPA2-OSEN"
+            11 -> "Passpoint Release 1/2"
+            12 -> "Passpoint Release 3"
+            13 -> "Wi-Fi Easy Connect(DPP)"
             else -> "不明"
         }
     }
