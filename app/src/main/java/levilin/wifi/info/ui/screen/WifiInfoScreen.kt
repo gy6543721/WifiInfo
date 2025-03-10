@@ -24,18 +24,21 @@ fun WifiInfoScreen(
         verticalArrangement = Arrangement.Center,
     ) {
         wifiInfo?.let { info ->
-            Text(text = "ネットワークタイプ: ${info.networkType}")
-            Text(text = "IPアドレス: ${info.ipAddress ?: "未知"}")
-            Text(text = "MACアドレス: ${info.macAddress ?: "未知"}")
-            Text(text = "BSSID: ${info.bssid ?: "未知"}")
-            Text(text = "SSID: ${info.ssid ?: "未知"}")
-            Text(text = "RSSI: ${info.rssi ?: "未知"}")
-            Text(text = "転送レート: ${info.linkSpeed ?: "未知"}(Mbps)")
-            Text(text = "PHYモード: ${info.phyMode ?: "未知"}")
-            Text(text = "チャンネル: ${info.channel ?: "未知"}")
-            Text(text = "NSS: ${info.nss ?: "未知"}")
-            Text(text = "セキュリティタイプ: ${info.securityType ?: "未知"}")
-        } ?: Text(text = "Wi-Fi情報なし")
+            if (info.networkType == "Wi-Fi") {
+                Text(text = "SSID: ${info.ssid ?: "未知"}")
+                Text(text = "BSSID: ${info.bssid ?: "未知"}")
+                Text(text = "IPアドレス: ${info.ipAddress ?: "未知"}")
+                Text(text = "MACアドレス: ${info.macAddress ?: "未知"}")
+                Text(text = "RSSI: ${info.rssi ?: "未知"}")
+                Text(text = "転送レート: ${info.linkSpeed ?: "未知"}(Mbps)")
+                Text(text = "PHYモード: ${info.phyMode ?: "未知"}")
+                Text(text = "チャンネル: ${info.channel ?: "未知"}")
+                Text(text = "NSS: ${info.nss ?: "未知"}")
+                Text(text = "セキュリティタイプ: ${info.securityType ?: "未知"}")
+            } else {
+                Text(text = "ネットワークタイプ: ${info.networkType}")
+            }
+        } ?: Text(text = "ネットワーク情報なし")
 
         Spacer(modifier = Modifier.height(16.dp))
 

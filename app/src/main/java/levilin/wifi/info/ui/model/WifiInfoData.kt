@@ -1,4 +1,4 @@
-package levilin.wifi.info.ui.data
+package levilin.wifi.info.ui.model
 
 data class WifiInfoData(
     val ipAddress: String?,

@@ -13,7 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import levilin.wifi.info.ui.data.WifiInfoModel
+import levilin.wifi.info.utility.WifiInfoUtility
 import levilin.wifi.info.ui.screen.WifiInfoScreen
 import levilin.wifi.info.ui.screen.WifiInfoViewModel
 import levilin.wifi.info.ui.theme.WifiInfoTheme
@@ -34,8 +34,7 @@ class MainActivity : ComponentActivity() {
                             .statusBarsPadding()
                             .navigationBarsPadding(),
                         viewModel = WifiInfoViewModel(
-                            wifiInfoModel = WifiInfoModel(
-                                context = LocalContext.current)
+                            wifiInfoUtility = WifiInfoUtility(context = LocalContext.current)
                         )
                     )
                 }

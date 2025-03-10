@@ -1,4 +1,4 @@
-package levilin.wifi.info.ui.data
+package levilin.wifi.info.utility
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,8 +14,9 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import androidx.core.content.ContextCompat.checkSelfPermission
+import levilin.wifi.info.ui.model.WifiInfoData
 
-class WifiInfoModel(private val context: Context) {
+class WifiInfoUtility(private val context: Context) {
     @SuppressLint("DefaultLocale")
     fun getWifiInfo(): WifiInfoData {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -75,15 +76,20 @@ class WifiInfoModel(private val context: Context) {
             } else {
                 null
             },
-            securityType = if (checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                wifiManager.configuredNetworks?.firstOrNull { it.networkId == wifiInfo?.networkId }?.let { config ->
-                    when {
-                        config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_PSK) -> "WPA"
-                        config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_EAP) -> "WPA-EAP"
-                        config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.IEEE8021X) -> "802.1X"
-                        else -> "Open"
+            securityType = if (checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                wifiManager.configuredNetworks?.firstOrNull { it.networkId == wifiInfo?.networkId }
+                    ?.let { config ->
+                        when {
+                            config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_PSK) -> "WPA"
+                            config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_EAP) -> "WPA-EAP"
+                            config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.IEEE8021X) -> "802.1X"
+                            else -> "Open"
+                        }
                     }
-                }
             } else {
                 "No Permission"
             },
