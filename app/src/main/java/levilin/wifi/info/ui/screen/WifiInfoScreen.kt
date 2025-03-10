@@ -44,15 +44,19 @@ fun WifiInfoScreen(
 
                     Text(text = "SSID: ${info.ssid ?: "未知"}")
                     Text(text = "BSSID: ${info.bssid ?: "未知"}")
-                    Text(text = "IPアドレス: ${info.ipAddress ?: "未知"}")
-                    Text(text = "MACアドレス: ${info.macAddress ?: "未知"}")
-                    Text(text = "電波強度（RSSI）: ${info.rssi ?: "未知"}")
-                    Text(text = "帯域: ${info.frequency ?: "未知"}(MHz)")
-                    Text(text = "転送レート: ${info.linkSpeed ?: "未知"}(Mbps)")
+                    Text(text = "端末IP: ${info.ipAddress ?: "未知"}")
+                    Text(text = "ルーターIP: ${info.ipAddress ?: "未知"}")
+                    Text(text = "ゲートウェイ: ${info.gateway ?: "未知"}")
+                    Text(text = "サブネット: ${info.subNet ?: "未知"}")
+                    Text(text = "DHCP: ${info.dhcp ?: "未知"}")
+                    Text(text = "DNS: ${info.dns ?: "未知"}")
+                    Text(text = "セキュリティタイプ: ${info.securityType ?: "未知"}")
+                    Text(text = "電波強度（RSSI）: ${info.rssi ?: "未知"}dB")
+                    Text(text = "帯域: ${info.frequency ?: "未知"}MHz")
+                    Text(text = "転送レート: ${info.linkSpeed ?: "未知"}Mbps")
                     Text(text = "PHYモード: ${info.phyMode ?: "未知"}")
                     Text(text = "チャンネル: ${info.channel ?: "未知"}")
                     Text(text = "NSS: ${info.nss ?: "未知"}")
-                    Text(text = "セキュリティタイプ: ${info.securityType ?: "未知"}")
                 } else {
                     Text(
                         text = "Wi-Fiに接続していない",
